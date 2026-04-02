@@ -1,0 +1,13 @@
+services:
+  postgres:
+    image: postgres:13
+    container_name: lab01_postgres
+    environment:
+      POSTGRES_DB: lab_01_db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/
+      - ./sql/ddl.sql:/docker-entrypoint-initdb.d/init.sql

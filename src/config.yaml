@@ -1,0 +1,16 @@
+---
+raw:
+  path: data/raw/
+silver:
+  path: data/silver/
+kaggle:
+  dataset: sturarods/anac-national-civil-aviation-agency-2000-2025
+  force_download: false
+visualization:
+  output_path: docs/plots/
+postgres:
+  host: localhost
+  port: 5432
+  database: lab_01_db
+  user: user
+  password: 123
