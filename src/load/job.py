@@ -4,7 +4,7 @@ from pathlib import Path
 
 import polars as pl
 
-from src.load.db_connector import get_db_connection
+from src.utils import get_db_connection
 
 
 def copy_lazyframe(cursor, lazy_df: pl.LazyFrame, table: str, columns: list[str]):
