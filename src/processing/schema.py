@@ -1,4 +1,12 @@
 import polars as pl
+from pyspark.sql.types import (
+    FloatType,
+    IntegerType,
+    ShortType,
+    StringType,
+    StructField,
+    StructType,
+)
 
 SCHEMA = {
     # ---- strings ----
@@ -51,3 +59,57 @@ SCHEMA = {
     "nr_carga_paga_km": pl.Utf8,
     "nr_bagagem_gratis_km": pl.Utf8,
 }
+
+SCHEMA_SPARK = StructType(
+    [
+        # ---- strings ----
+        StructField("id_basica", StringType(), True),
+        StructField("id_empresa", StringType(), True),
+        StructField("id_tipo_linha", StringType(), True),
+        StructField("id_arquivo", StringType(), True),
+        StructField("id_di", StringType(), True),
+        StructField("cd_di", StringType(), True),
+        StructField("nr_ano_mes_referencia", StringType(), True),
+        StructField("nr_chave", StringType(), True),
+        StructField("nr_singular", StringType(), True),
+        # ---- ints ----
+        StructField("nr_decolagem", ShortType(), True),  # Int8 -> ShortType
+        StructField("nr_mes_referencia", ShortType(), True),  # Int16 -> ShortType
+        StructField("nr_dia_referencia", ShortType(), True),
+        StructField("nr_voo", ShortType(), True),
+        StructField("nr_semestre_referencia", ShortType(), True),
+        StructField("nr_trimestre_referencia", ShortType(), True),
+        StructField("nr_semana_referencia", ShortType(), True),
+        StructField("nr_escala_destino", ShortType(), True),
+        # ---- floats ----
+        StructField("lt_combustivel", FloatType(), True),  # Float16 -> FloatType
+        StructField("kg_payload", FloatType(), True),
+        StructField("km_distancia", FloatType(), True),
+        StructField("kg_bagagem_livre", FloatType(), True),
+        StructField("kg_bagagem_excesso", FloatType(), True),
+        StructField("kg_carga_paga", FloatType(), True),
+        StructField("kg_carga_gratis", FloatType(), True),
+        StructField("kg_correio", FloatType(), True),
+        StructField("kg_peso", FloatType(), True),
+        StructField("nr_pax_gratis_km", FloatType(), True),
+        StructField("nr_carga_gratis_km", FloatType(), True),
+        StructField("nr_correio_km", FloatType(), True),
+        StructField("nr_bagagem_paga_km", FloatType(), True),
+        StructField("nr_ask", FloatType(), True),
+        StructField("nr_rpk", FloatType(), True),
+        StructField("nr_atk", FloatType(), True),
+        StructField("nr_rtk", FloatType(), True),
+        # ---- converter depois (keeping as string) ----
+        StructField("nr_horas_voadas", StringType(), True),
+        StructField("nr_velocidade_media", StringType(), True),
+        StructField("nr_ano_partida_real", StringType(), True),
+        StructField("nr_semestre_partida_real", StringType(), True),
+        StructField("nr_trimestre_partida_real", StringType(), True),
+        StructField("nr_assentos_ofertados", StringType(), True),
+        StructField("nr_passag_pagos", StringType(), True),
+        StructField("nr_passag_gratis", StringType(), True),
+        StructField("nr_linha", StringType(), True),
+        StructField("nr_carga_paga_km", StringType(), True),
+        StructField("nr_bagagem_gratis_km", StringType(), True),
+    ]
+)
