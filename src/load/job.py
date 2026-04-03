@@ -1,15 +1,8 @@
 import io
 import logging
 from pathlib import Path
-
+from src.load.db_connector import get_db_connection
 import polars as pl
-import psycopg2
-
-
-def get_db_connection(host: str, database: str, user: str, password: str, port: int):
-    conn = psycopg2.connect(host=host, database=database, user=user, password=password, port=port)
-    cursor = conn.cursor()
-    return cursor, conn
 
 
 def copy_lazyframe(cursor, lazy_df: pl.LazyFrame, table: str, columns: list[str]):
@@ -22,7 +15,7 @@ def copy_lazyframe(cursor, lazy_df: pl.LazyFrame, table: str, columns: list[str]
 
     cols = ",".join(columns)
     cursor.copy_expert(f"COPY {table} ({cols}) FROM STDIN WITH CSV HEADER", buffer)
-
+    
 
 def load_dim_data(df_lazy, cursor):
     logging.info("Loading dim_data")
