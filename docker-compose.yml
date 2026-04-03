@@ -9,5 +9,23 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - ./postgres_data:/var/lib/postgresql/
+      - postgres_data:/var/lib/postgresql/data
       - ./sql/ddl.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - lab01_network
+
+  ingestao:
+    build: .
+    container_name: lab01_ingestao
+    depends_on:
+      - postgres
+    networks:
+      - lab01_network
+    volumes:
+      - ./data:/app/data
+
+volumes:
+  postgres_data:
+
+networks:
+  lab01_network:
