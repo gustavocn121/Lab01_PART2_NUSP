@@ -1,7 +1,6 @@
 import polars as pl
 from pyspark.sql.types import (
     FloatType,
-    IntegerType,
     ShortType,
     StringType,
     StructField,
@@ -73,8 +72,10 @@ SCHEMA_SPARK = StructType(
         StructField("nr_chave", StringType(), True),
         StructField("nr_singular", StringType(), True),
         # ---- ints ----
-        StructField("nr_decolagem", ShortType(), True),  # Int8 -> ShortType
-        StructField("nr_mes_referencia", ShortType(), True),  # Int16 -> ShortType
+        StructField("nr_decolagem", ShortType(), True),
+        StructField(
+            "nr_mes_referencia", ShortType(), True
+        ),
         StructField("nr_dia_referencia", ShortType(), True),
         StructField("nr_voo", ShortType(), True),
         StructField("nr_semestre_referencia", ShortType(), True),
@@ -82,7 +83,9 @@ SCHEMA_SPARK = StructType(
         StructField("nr_semana_referencia", ShortType(), True),
         StructField("nr_escala_destino", ShortType(), True),
         # ---- floats ----
-        StructField("lt_combustivel", FloatType(), True),  # Float16 -> FloatType
+        StructField(
+            "lt_combustivel", FloatType(), True
+        ),
         StructField("kg_payload", FloatType(), True),
         StructField("km_distancia", FloatType(), True),
         StructField("kg_bagagem_livre", FloatType(), True),

@@ -16,7 +16,13 @@ def _save(fig, path):
 def plot_voos_por_empresa(df: pl.LazyFrame, output_path: Path):
     logging.info("Plotting plot_voos_por_empresa...")
 
-    data = df.group_by("nm_empresa").len().sort("len", descending=True).limit(10).collect()
+    data = (
+        df.group_by("nm_empresa")
+        .len()
+        .sort("len", descending=True)
+        .limit(10)
+        .collect()
+    )
 
     fig, ax = plt.subplots(figsize=FIG_SIZE)
     ax.barh(data["nm_empresa"][::-1], data["len"][::-1])
@@ -79,7 +85,13 @@ def plot_voos_por_ano(df: pl.LazyFrame, output_path: Path):
 def plot_top_paises(df: pl.LazyFrame, output_path: Path):
     logging.info("Plotting plot_top_paises...")
 
-    data = df.group_by("nm_pais").len().sort("len", descending=True).limit(10).collect()
+    data = (
+        df.group_by("nm_pais")
+        .len()
+        .sort("len", descending=True)
+        .limit(10)
+        .collect()
+    )
 
     fig, ax = plt.subplots(figsize=FIG_SIZE)
     ax.barh(data["nm_pais"][::-1], data["len"][::-1])
@@ -96,7 +108,11 @@ def plot_top_rotas(df: pl.LazyFrame, output_path: Path):
 
     data = (
         df.with_columns(
-            (pl.col("nm_municipio_origem") + " -> " + pl.col("nm_municipio_destino")).alias("rota")
+            (
+                pl.col("nm_municipio_origem")
+                + " -> "
+                + pl.col("nm_municipio_destino")
+            ).alias("rota")
         )
         .group_by("rota")
         .len()

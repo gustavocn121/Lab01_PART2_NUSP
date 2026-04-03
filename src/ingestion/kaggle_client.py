@@ -18,6 +18,10 @@ def load_kaggle_credentials():
     return token_str
 
 
-def download_dataset(dataset: str, output_dir: str, force_download: bool = False) -> str:
+def download_dataset(
+    dataset: str, output_dir: str, force_download: bool = False
+) -> str:
     load_kaggle_credentials()
-    return kagglehub.dataset_download(dataset, output_dir=output_dir, force_download=force_download)
+    return kagglehub.dataset_download(
+        dataset, output_dir=output_dir, force_download=force_download
+    )

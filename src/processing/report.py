@@ -9,13 +9,27 @@ from deltalake import write_deltalake
 def generate_report(df: pl.LazyFrame) -> pl.DataFrame:
     logging.info("Generating profiling report...")
 
-    numeric_types = (pl.Int8, pl.Int16, pl.Int32, pl.Int64, pl.Float32, pl.Float64)
+    numeric_types = (
+        pl.Int8,
+        pl.Int16,
+        pl.Int32,
+        pl.Int64,
+        pl.Float32,
+        pl.Float64,
+    )
 
-    numeric_cols = [col for col, dtype in df.collect_schema().items() if dtype in numeric_types]
+    numeric_cols = [
+        col
+        for col, dtype in df.collect_schema().items()
+        if dtype in numeric_types
+    ]
 
     metrics = [
         pl.len().alias("total_rows"),
-        *[pl.col(c).null_count().alias(f"{c}_nulls") for c in df.collect_schema().names()],
+        *[
+            pl.col(c).null_count().alias(f"{c}_nulls")
+            for c in df.collect_schema().names()
+        ],
         *[pl.col(c).mean().alias(f"{c}_mean") for c in numeric_cols],
         *[pl.col(c).std().alias(f"{c}_stddev") for c in numeric_cols],
     ]

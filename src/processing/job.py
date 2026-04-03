@@ -10,7 +10,9 @@ from src.processing.visualization import run as run_visualization
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 
 def clean_data(df: pl.LazyFrame) -> pl.LazyFrame:
@@ -32,11 +34,17 @@ def clean_data(df: pl.LazyFrame) -> pl.LazyFrame:
         .cast(pl.Utf8)
         .str.replace(",", ".")
         .cast(pl.Float16),
-        pl.col("nr_decolagem").cast(pl.Utf8).str.replace(",", ".").cast(pl.Float16).cast(pl.Int8),
+        pl.col("nr_decolagem")
+        .cast(pl.Utf8)
+        .str.replace(",", ".")
+        .cast(pl.Float16)
+        .cast(pl.Int8),
         pl.col("id_empresa").cast(pl.Int32),
         pl.col("id_aerodromo_origem").cast(pl.Int16),
         pl.col("id_aerodromo_destino").cast(pl.Int16),
-        pl.col("dt_referencia").cast(pl.Utf8).str.strptime(pl.Date, strict=False),
+        pl.col("dt_referencia")
+        .cast(pl.Utf8)
+        .str.strptime(pl.Date, strict=False),
         *[
             pl.col(c).alias(c.replace("nr", "nm"))
             for c in [
