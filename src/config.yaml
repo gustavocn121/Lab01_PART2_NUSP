@@ -9,7 +9,7 @@ kaggle:
 visualization:
   output_path: docs/plots/
 postgres:
-  host: localhost
+  host: postgres
   port: 5432
   database: lab_01_db
   user: user
