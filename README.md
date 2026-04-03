@@ -1,4 +1,4 @@
-# Lab01_PART1_NUSP
+# Lab01_PART2_NUSP
 Repo público no github: [link](https://github.com/gustavocn121/Lab01_PART1_NUSP)
 
 ## 0. Configuração de variáveis de ambiente
