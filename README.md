@@ -1,6 +1,14 @@
 # Lab01_PART1_NUSP
 Repo público no github: [link](https://github.com/gustavocn121/Lab01_PART1_NUSP)
 
+## 0. Configuração de variáveis de ambiente
+
+Crie um arquivo .env na raiz do projeto com o seguinte conteúdo:
+```.env
+KAGGLE_API_TOKEN=
+```
+Preencha o valor com o seu token da API do Kaggle.
+
 ## 1. Arquitetura
 
 ```mermaid
