@@ -1,3 +1,5 @@
+import numpy as np
+import pandas as pd
 import polars as pl
 from pyspark.sql.types import (
     FloatType,
@@ -6,6 +8,59 @@ from pyspark.sql.types import (
     StructField,
     StructType,
 )
+
+SCHEMA_PANDAS = {
+    # strings
+    "id_basica": str,
+    "id_empresa": str,
+    "id_tipo_linha": str,
+    "id_arquivo": str,
+    "id_di": str,
+    "cd_di": str,
+    "nr_ano_mes_referencia": str,
+    "nr_chave": str,
+    "nr_singular": str,
+    # ints (nullable to handle NA values in CSV)
+    "nr_decolagem": pd.Int8Dtype(),
+    "nr_mes_referencia": pd.Int16Dtype(),
+    "nr_dia_referencia": pd.Int8Dtype(),
+    "nr_voo": pd.Int16Dtype(),
+    "nr_semestre_referencia": pd.Int16Dtype(),
+    "nr_trimestre_referencia": pd.Int8Dtype(),
+    "nr_semana_referencia": pd.Int8Dtype(),
+    "nr_escala_destino": pd.Int16Dtype(),
+    # floats
+    "lt_combustivel": np.float16,
+    "kg_payload": np.float16,
+    "km_distancia": np.float16,
+    "kg_bagagem_livre": np.float16,
+    "kg_bagagem_excesso": np.float16,
+    "kg_carga_paga": np.float16,
+    "kg_carga_gratis": np.float16,
+    "kg_correio": np.float16,
+    "kg_peso": np.float16,
+    "nr_pax_gratis_km": np.float16,
+    "nr_carga_gratis_km": np.float16,
+    "nr_correio_km": np.float16,
+    "nr_bagagem_paga_km": np.float16,
+    "nr_ask": np.float16,
+    "nr_rpk": np.float16,
+    "nr_atk": np.float16,
+    "nr_rtk": np.float16,
+    # to convert later
+    "nr_horas_voadas": str,
+    "nr_velocidade_media": str,
+    "nr_ano_partida_real": str,
+    "nr_semestre_partida_real": str,
+    "nr_trimestre_partida_real": str,
+    "nr_assentos_ofertados": str,
+    "nr_passag_pagos": str,
+    "nr_passag_gratis": str,
+    "nr_linha": str,
+    "nr_carga_paga_km": str,
+    "nr_bagagem_gratis_km": str,
+}
+
 
 SCHEMA = {
     # ---- strings ----
