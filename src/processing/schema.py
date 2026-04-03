@@ -73,9 +73,7 @@ SCHEMA_SPARK = StructType(
         StructField("nr_singular", StringType(), True),
         # ---- ints ----
         StructField("nr_decolagem", ShortType(), True),
-        StructField(
-            "nr_mes_referencia", ShortType(), True
-        ),
+        StructField("nr_mes_referencia", ShortType(), True),
         StructField("nr_dia_referencia", ShortType(), True),
         StructField("nr_voo", ShortType(), True),
         StructField("nr_semestre_referencia", ShortType(), True),
@@ -83,9 +81,7 @@ SCHEMA_SPARK = StructType(
         StructField("nr_semana_referencia", ShortType(), True),
         StructField("nr_escala_destino", ShortType(), True),
         # ---- floats ----
-        StructField(
-            "lt_combustivel", FloatType(), True
-        ),
+        StructField("lt_combustivel", FloatType(), True),
         StructField("kg_payload", FloatType(), True),
         StructField("km_distancia", FloatType(), True),
         StructField("kg_bagagem_livre", FloatType(), True),
