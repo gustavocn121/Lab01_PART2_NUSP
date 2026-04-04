@@ -169,7 +169,8 @@ if __name__ == "__main__":
     )
     run(
         {
-            "raw": {"path": "data/raw/sample/"},
+            # "raw": {"path": "data/raw/sample/"},
+            "raw": {"path": "data/raw/"},
             "quality": {
                 "expectation_suite_name": "anac_expectation_suite",
                 "asset_name": "my_asset",
