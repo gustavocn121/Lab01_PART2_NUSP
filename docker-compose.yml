@@ -32,6 +32,7 @@ services:
     environment:
       MB_DB_TYPE: h2
       MB_DB_FILE: /metabase-data/metabase.db
+      MB_ENABLE_SERIALIZATION: true
     depends_on:
       - postgres
     networks:
