@@ -13,43 +13,65 @@ Preencha o valor com o seu token da API do Kaggle.
 
 ```mermaid
 flowchart LR
-    A[Fonte: CSV ANAC] --> B[Python: Processing Job]
-    B --> C[Parquet: Silver Layer]
-    C --> D[Python: Load Job]
-    D --> E[Postgres: Data Warehouse]
-    B --> F[Report: Métricas e Relatórios]
-    B --> G[Visualization: Gráficos e Dashboards]
+    A[Kaggle: CSV ANAC] --> B[Ingestion Job]
+    B --> C[Raw Layer: CSV]
+    C --> D[Processing Job]
+    D --> E{Output}
+    E -->|Silver Layer| F[Parquet Files]
+    E -->|Métricas| G[Report]
+    E -->|Gráficos| H[Visualization]
+    F --> I[Load Job]
+    I --> J[Postgres: Data Warehouse]
+    C --> K[Quality: Great Expectations]
+    K --> L[Validation Report]
 ```
 
 ## 2. Documentação da Tarefa
 
-- Ingestion:
-  - Conexão com o kagglehub.
-  - Download dos dados brutos da ANAC.
-- Processing Job (`src/processing/job.py`):
-  - Limpeza de dados: padronização de tipos, tratamento de separadores decimais, datas.
-  - Tratamento de valores nulos e duplicados.
-  - Exportação da camada Silver em formato Parquet.
-  - Uso de `schema.py` para definição de tipos esperados.
-- Report (src/processing/report.py):
-  - Geração de relatório de caracterização.
-  - Análise de qualidade de dados.
-  - Geração de métricas por coluna.
-  - Criação de relatórios tabulares
-- Visualization (`src/processing/visualization.py`):
-  - Criação de gráficos.
-- Load Job (src/load/job.py):
-    - Leitura dos arquivos Parquet da camada Silver.
-  - Inserção em tabelas do Postgres:
-    - `dim_data`
-    - `dim_empresa`
-    - `dim_aeroporto`
-    - `fato_voos`
+### 2.1 Ingestion Job (`src/ingestion/job.py`)
+- Conexão com Kaggle via `kaggle_client.py`.
+- Download dos dados brutos da ANAC.
+- Salva os arquivos CSV na camada Raw.
 
-- Scripts auxiliares:
-  - schema.py define os tipos esperados das colunas.
-  - report.py gera métricas de qualidade de dados.
-  - visualization.py cria gráficos exploratórios.
+### 2.2 Processing Job (`src/processing/job.py`)
+- **Limpeza de dados:**
+  - Padronização de tipos usando `schema.py`
+  - Tratamento de separadores decimais (`,` → `.`)
+  - Conversão de datas para formato `YYYY-MM-DD`
+  - Castings de tipos (Int32, Int16, Float16, etc.)
+  - Transformação de colunas `nr_*` para `nm_*` (semântica)
+- **Execução de subprocessos:**
+  - Chama `report.py` para geração de métricas
+  - Chama `visualization.py` para criação de gráficos
+- **Exportação:**
+  - Salva dados processados em formato Parquet na camada Silver
+
+### 2.3 Report (`src/processing/report.py`)
+- Geração de relatório de caracterização dos dados
+- Análise de qualidade de dados (nulos, duplicados)
+- Cálculo de métricas por coluna
+- Criação de relatórios tabulares em Markdown
+
+### 2.4 Visualization (`src/processing/visualization.py`)
+- Criação de gráficos exploratórios
+- Visualizações salvas em `docs/plots/`
+
+### 2.5 Load Job (`src/load/job.py`)
+- Leitura dos arquivos Parquet da camada Silver
+- **Uso de COPY para bulk insert:** Streaming com buffer de CSV para maior performance
+- **Inserção em tabelas Postgres:**
+  - `dim_data` - Datas (data, ano, trimestre, mês)
+  - `dim_empresa` - Companhias aéreas (ID, nome, IATA, ICAO, país)
+  - `dim_aeroporto` - Aeroportos (ID, código, nome, país)
+  - `fato_voos` - Transações de voos com medidas de quantidade e peso
+
+### 2.6 Quality (`src/quality/validate_raw.py`)
+- Validação dos dados brutos com **Great Expectations**
+- Expectations configuradas:
+  - Verificação de nulos em colunas críticas
+  - Validação de ranges numéricos
+  - Validação de formatos de data
+- Geração automática de relatório HTML em `gx/uncommitted/data_docs/`
 
 ## 3. Dicionário de Dados
 
@@ -87,26 +109,76 @@ nr_velocidade_media         | Float16    | Velocidade média do voo
 
 ## 5. Instruções de Execução
 
-1. Docker
-Com o docker configurado e rodando na sua maquina, execute:
+### Pré-requisitos
+
+- [Docker](https://docs.docker.com/get-docker/) instalado e em execução
+- Arquivo `.env` configurado na raiz do projeto (ver seção 0)
+
+### 5.1 Construir a imagem Docker
+
+Na raiz do projeto, execute:
+
+```bash
+docker-compose build
+```
+
+### 5.2 Subir os containers
+
+O projeto possui três serviços definidos no `docker-compose.yml`:
+
+| Serviço    | Descrição                          | Porta |
+|------------|------------------------------------|-------|
+| `postgres`  | Banco de dados PostgreSQL          | 5432  |
+| `ingestao`  | Pipeline de ingestão e validação   | —     |
+| `metabase`  | Dashboard de visualização          | 3000  |
+
+Para subir todos os containers:
+
 ```bash
 docker-compose up
 ```
 
-2. Python
-Em seguida, é só seguir o passo a passo a baixo para executar o python:
+Para encerrar os containers:
+
 ```bash
-git clone https://github.com/gustavocn121/Lab01_PART1_NUSP.git
-cd Lab01_PART1_NUSP
-python -m venv .venv
-source .venv/bin/activate  # Linux/macOS
-# .venv\Scripts\activate   # Windows
-
-pip install -r requirements.txt
-
-python -m src.main
+docker-compose down
 ```
-3. Métricas de negócio e gráficos
-- Os gráficos gerado estão disponíveis em [`docs/plots`](docs/plots)
+
+### 5.3 Executar as validações do Great Expectations
+
+As validações são executadas automaticamente ao subir o container `ingestao` (via `docker-compose up`), pois fazem parte do pipeline principal em `src/main.py`.
+
+Para executar **somente** as validações do Great Expectations localmente (sem Docker):
+
+```bash
+python -m venv .venv
+# source .venv/bin/activate   # Linux/macOS
+.venv\Scripts\activate    # Windows
+
+pip install uv
+uv sync
+
+python -m src.quality.validate_raw
+```
+
+As expectations configuradas validam os dados brutos da ANAC verificando:
+
+| Expectation | Coluna | Regra |
+|---|---|---|
+| `expect_column_values_to_not_be_null` | `id_basica` | Sem nulos |
+| `expect_column_values_to_not_be_null` | `nm_empresa` | Sem nulos |
+| `expect_column_values_to_be_between` | `nr_voo` | Entre 1 e 9999 |
+| `expect_column_values_to_be_between` | `nr_assentos_ofertados` | Entre 10 e 800 |
+| `expect_column_values_to_match_strftime_format` | `dt_referencia` | Formato `%Y-%m-%d` |
+| `expect_column_values_to_match_strftime_format` | `dt_partida_real` | Formato `%Y-%m-%d` |
+| `expect_column_values_to_match_strftime_format` | `dt_chegada_real` | Formato `%Y-%m-%d` |
+| `expect_column_values_to_be_between` | `kg_payload` | Entre 0 e 50000 |
+| `expect_column_values_to_be_between` | `km_distancia` | Entre 0 e 10000 |
+
+Após a execução, o relatório HTML do Great Expectations é gerado automaticamente em `gx/uncommitted/data_docs/`. Para visualizá-lo, abra o arquivo `index.html` no navegador.
+
+### 5.4 Métricas de negócio e gráficos
+
+- Os gráficos gerados estão disponíveis em [`docs/plots`](docs/plots)
 - O arquivo markdown contendo elas está em [`docs/graficos.md`](docs/graficos.md)
 - A query com as métricas de negócio e suas respectivas queries estão disponíveis em [`docs/metricas.md`](docs/metricas.md)
